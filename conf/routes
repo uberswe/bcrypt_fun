@@ -1,0 +1,29 @@
+# Routes Config
+#
+# This file defines all application routes (Higher priority routes first)
+#
+
+module:testrunner
+# module:jobs
+
+
+GET     /                                       App.Index
+
+# API Methods
+GET     /api/v1/hashes                       Api.Hashes
+POST     /api/v1/hashes                      Api.Hashes
+
+# Map static resources from the /app/public folder to the /public path or on / when needed
+
+GET     /browserconfig.xml                      Static.Serve("public","browserconfig.xml")
+GET     /crossdomain.xml                        Static.Serve("public","crossdomain.xml")
+GET     /humans.txt                             Static.Serve("public","humans.txt")
+GET     /favicon.ico                            Static.Serve("public","favicon.ico")
+GET     /robots.txt                             Static.Serve("public","robots.txt")
+GET     /tile.png                               Static.Serve("public","tile.png")
+GET     /tile-wide.png                          Static.Serve("public","tile-wide.png")
+GET     /apple-touch-icon.png                   Static.Serve("public","apple-touch-icon.png")
+GET     /public/*filepath                       Static.Serve("public")
+
+# Catch all
+*       /:controller/:action                    :controller.:action

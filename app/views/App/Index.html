@@ -1,0 +1,93 @@
+{{template "header.html" .}}
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12" style="height:25px;"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Generate one or more bcrypt hashes</h2>
+            <p>Use <a href="https://bcrypt.fun">Bcrypt.fun</a> to generate one or more bcrypt hashes from strings. This is usually used for testing or recovering forgotten passwords when the user has access to the database.</p>
+            <form id="bcryptform" method="post" onsubmit="return generateBcryptHashes();">
+                <div class="form-group">
+                    <label for="strings">Strings</label>
+                    <textarea name="strings" type="text" class="form-control" rows="6" id="strings" aria-describedby="stringsHelp" value="">Test1234!</textarea>
+                    <small id="stringsHelp" class="form-text text-muted">One string per line, bcrypt hash will be on the right.</small>
+                </div>
+                <div class="col-xs-12" style="height:25px;"></div>
+                <button type="submit" class="btn btn-primary">Generate</button>
+            </form>
+
+        </div>
+        <div class="col-md-6">
+                <div class="well">
+                    <div id="password-block">
+
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="span6">
+                {{template "flash.html" .}}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateBcryptHashes() {
+            var values = $("#bcryptform").serializeArray();
+            var data = {};
+
+            for (i = 0; i < values.length; i++) {
+                    data[values[i].name] = values[i].value;
+            }
+
+            $.ajax({
+                method: "POST",
+                url: "/api/v1/hashes",
+                data: data
+            }).done(function (obj) {
+                var passblock = $("#password-block");
+                passblock.html("");
+                for (i = 0; i < obj.hashes.length; i++) {
+                    passblock.append('<p>' + obj.hashes[i].hash + '</p>');
+                }
+
+                if (data["highlight"]) {
+                    var ps = passblock.find("p");
+                    var p = ps[Math.floor(Math.random() * ps.length)];
+                    SelectText(p);
+                }
+            });
+            return false;
+        }
+
+        // See https://stackoverflow.com/questions/985272/selecting-text-in-an-element-akin-to-highlighting-with-your-mouse
+        function SelectText(element) {
+            var doc = document
+                , text = element
+                , range, selection
+            ;
+            if (doc.body.createTextRange) {
+                range = document.body.createTextRange();
+                range.moveToElementText(text);
+                range.select();
+            } else if (window.getSelection) {
+                selection = window.getSelection();
+                range = document.createRange();
+                range.selectNodeContents(text);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+
+        generateBcryptHashes();
+
+    </script>
+
+</div>
+
+{{template "footer.html" .}}
