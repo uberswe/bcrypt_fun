@@ -13,37 +13,21 @@ func (c App) Index() revel.Result {
 	var date string = time.Now().Format("2006")
 	var title string = "Bcrypt.fun"
 	var count string = "5"
-	if (c.Session["count"] != "") {
-		count = c.Session["count"]
+
+	stringsVar := "Test1234!"
+
+	var stringsTempVar string
+	c.Params.Query=c.Request.URL.Query()
+	c.Params.Bind(&stringsTempVar,"strings")
+
+	if (c.Session["strings"] != "") {
+		stringsVar = c.Session["strings"]
 	}
-	var length string = "25"
-	if (c.Session["length"] != "") {
-		length = c.Session["length"]
+
+	if (stringsTempVar != "") {
+		stringsVar = stringsTempVar
 	}
-	var capital string = "true"
-	if (c.Session["capital"] != "") {
-		capital = c.Session["capital"];
-	}
-	var lower string = "true"
-	if (c.Session["lower"] != "") {
-		lower = c.Session["lower"];
-	}
-	var special string = "true"
-	if (c.Session["special"] != "") {
-		special = c.Session["special"];
-	}
-	var spaces string = "false"
-	if (c.Session["spaces"] != "") {
-		spaces = c.Session["spaces"];
-	}
-	var numbers string = "true"
-	if (c.Session["numbers"] != "") {
-		numbers = c.Session["numbers"];
-	}
-	var highlight string = "false"
-	if (c.Session["highlight"] != "") {
-		highlight = c.Session["highlight"];
-	}
+
 	var remember string = "false"
 	if (c.Session["remember"] != "") {
 		remember = c.Session["remember"];
@@ -51,5 +35,5 @@ func (c App) Index() revel.Result {
 
 	// Should be moved to new controller and all controllers inherit
 	var action string = c.Action
-	return c.Render(date, title, count, length, capital, lower, special, spaces, numbers, highlight, remember, action)
+	return c.Render(date, title, count, stringsVar, remember, action)
 }
