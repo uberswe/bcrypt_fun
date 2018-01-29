@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/revel/revel"
 	"time"
+	"strconv"
 )
 
 type App struct {
@@ -15,10 +16,20 @@ func (c App) Index() revel.Result {
 	var count string = "5"
 
 	stringsVar := "Test1234!"
+	difficultyVar := 5
 
 	var stringsTempVar string
+	var difficultyTempVar int
 	c.Params.Query=c.Request.URL.Query()
 	c.Params.Bind(&stringsTempVar,"strings")
+	c.Params.Bind(&difficultyTempVar,"difficulty")
+
+	if (c.Session["difficulty"] != "") {
+		parsediff, err := strconv.ParseInt(c.Session["difficulty"], 10, 64)
+		if !(err != nil) && parsediff > 0 && parsediff <= 14 {
+			difficultyVar = int(parsediff)
+		}
+	}
 
 	if (c.Session["strings"] != "") {
 		stringsVar = c.Session["strings"]
@@ -35,5 +46,5 @@ func (c App) Index() revel.Result {
 
 	// Should be moved to new controller and all controllers inherit
 	var action string = c.Action
-	return c.Render(date, title, count, stringsVar, remember, action)
+	return c.Render(date, title, count, stringsVar, remember, difficultyVar, action)
 }

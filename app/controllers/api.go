@@ -33,14 +33,30 @@ func (c Api) Index() revel.Result {
 func (c Api) Hashes() revel.Result {
 	var paramStrings string
 	var paramRemember bool
+	var difficultyVar int
+
 	c.Params.Bind(&paramStrings, "strings") // Sets the number of passwords
 	c.Params.Bind(&paramRemember, "remember") // Store values in session cookie
+	c.Params.Bind(&difficultyVar,"difficulty")
+
+	if difficultyVar < 0 {
+		difficultyVar = 1
+	}
+
+	if difficultyVar >= 14 {
+		difficultyVar = 14
+	}
+
+	parsediff := strconv.FormatInt(int64(difficultyVar), 10)
+
 	if (paramRemember) {
 		c.Session["strings"] = paramStrings;
 		c.Session["remember"] = boolToString(paramRemember);
+		c.Session["difficulty"] = parsediff;
 	} else {
 		delete(c.Session, "strings")
 		delete(c.Session, "remember")
+		delete(c.Session, "difficulty")
 	}
 
 	data := make(map[string]interface{})
@@ -49,12 +65,15 @@ func (c Api) Hashes() revel.Result {
 	hashes := []Hash{}
 	limit := 0
 	for _, str := range stringArray {
-		hash, _ := HashPassword(str)
+		hash, _ := HashPassword(str, difficultyVar)
 		hashes = append(hashes, Hash{Hash:hash})
 		limit++
 		// Limit to 20 hashes
 		if limit >= 20 {
 			break
+		}
+		if difficultyVar >= 10 {
+			break;
 		}
 	}
 
@@ -65,8 +84,8 @@ func (c Api) Hashes() revel.Result {
 	//return c.RenderXML(data)
 }
 
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 5)
+func HashPassword(password string, cost int) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), cost)
 	return string(bytes), err
 }
 

@@ -20,4 +20,4 @@ Then run the following commands in the project directory
 
 `docker run -it -p 8005:8005 bcrypt-fun`
 
-The app should now be running on http://127.0.0.1:8080
+The app should now be running on http://127.0.0.1:8005

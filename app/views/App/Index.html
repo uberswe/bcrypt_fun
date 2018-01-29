@@ -13,8 +13,13 @@
             <form id="bcryptform" method="post" onsubmit="return generateBcryptHashes();">
                 <div class="form-group">
                     <label for="strings">Strings</label>
-                    <textarea name="strings" type="text" class="form-control" rows="6" id="strings" aria-describedby="stringsHelp" value="">{{.stringsVar}}</textarea>
+                    <textarea name="strings" type="text" class="form-control" rows="6" id="strings" aria-describedby="stringsHelp">{{.stringsVar}}</textarea>
                     <small id="stringsHelp" class="form-text text-muted">One string per line, bcrypt hash will be on the right.</small>
+                </div>
+                <div class="form-group">
+                    <label for="difficulty">Cost</label>
+                    <input name="difficulty" type="text" class="form-control" id="difficulty" aria-describedby="difficultyHelp" value="{{.difficultyVar}}">
+                    <small id="difficultyHelp" class="form-text text-muted">Set the cost between 0 and 15, limited to 1 hash when cost >= 10</small>
                 </div>
                 <div class="form-check">
                     <label class="form-check-label">
