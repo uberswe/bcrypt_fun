@@ -1,6 +1,6 @@
 # Bcrypt.fun
 
-Created by [Markus Tenghamn](https://ma.rkus.io)
+A simple website to generate Bcrypt hashes from strings.
 
 See the project live at https://bcrypt.fun
 
@@ -18,4 +18,9 @@ go-bindata assets/... views/...
 
 And then simply run using `./bcrypt_fun` and go to `localhost:8005` in your browser
 
+## Contributors
+
+Created by [Markus Tenghamn](https://ma.rkus.io)
+
+Other contributors welcome!
 

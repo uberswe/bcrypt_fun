@@ -89,7 +89,11 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	session.Save(r, w)
+	err = session.Save(r, w)
+
+	if err != nil {
+		log.Printf("Session error: %v\n", err)
+	}
 
 	data["href"] = siteUrl + "/api/v1/hashes"
 	data["hashes"] = hashes

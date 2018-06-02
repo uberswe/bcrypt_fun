@@ -21,6 +21,7 @@ type IndexPageData struct {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
+
 	session, err := store.Get(r, cookieName)
 
 	if err != nil {

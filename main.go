@@ -11,23 +11,36 @@ import (
 	"os"
 	"strings"
 	"log"
+	"flag"
 )
 
-// port 8005?
-// cookie prefix BCRYPTFUN
-// session expires = 720h
+var sessionExpiry = 3600 * 24 * 365  // 365 days
 var cookieName = "BCRYPTFUN"
 var siteUrl = "https://bcrypt.fun"
 var siteName = "Bcrypt.fun"
+var host = ":8005"
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 var store = sessions.NewCookieStore([]byte(RandStringRunes(50)))
 var tmpl = ParseTemplates()
 
 func init() {
+	store.Options = &sessions.Options{
+		Domain:   "localhost",
+		Path:     "/",
+		MaxAge:   sessionExpiry,
+		HttpOnly: true,
+	}
+
 	rand.Seed(time.Now().UnixNano())
 }
 
 func main() {
+	flag.StringVar(&cookieName, "cookiename", cookieName, "The name to be used for cookies")
+	flag.StringVar(&siteUrl, "siteurl", siteUrl, "The site url")
+	flag.StringVar(&siteName, "sitename", siteName, "The name of the site")
+	flag.StringVar(&host, "host", host, "The host and port (localhost:8005)")
+	flag.IntVar(&sessionExpiry, "sessionecpiry", sessionExpiry, "Time in seconds that sessions should last (3600 * 24 * 365)")
+
 	r := mux.NewRouter()
 	r.PathPrefix("/favicon.ico").Handler(http.FileServer(http.Dir("./assets/favicon.ico")))
 	r.PathPrefix("/favicon.png").Handler(http.FileServer(http.Dir("./assets/img/favicon.png")))
