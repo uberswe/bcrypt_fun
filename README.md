@@ -1,23 +1,26 @@
 # Bcrypt.fun
 
-Created by [Markus Tenghamn](https://ma.rkus.io)
-
-The project uses the Revel framework.
+A simple website to generate Bcrypt hashes from strings.
 
 See the project live at https://bcrypt.fun
 
-Credit to this blog post for helping me get Revel running in Docker http://jbeckwith.com/2015/05/08/docker-revel-appengine/
+## Run for development
 
-## How to run this locally
+Simply type `go run main.go app.go api.go` and go to `localhost:8005` in your browser
 
-Install docker
+## Run for production
 
-Clone this project
+Optionally use bindata if you want to include the template files in your binary
 
-Then run the following commands in the project directory
+```
+go-bindata assets/... views/...
+```
 
-`docker build -t bcrypt-fun .`
+And then simply run using `./bcrypt_fun` and go to `localhost:8005` in your browser
 
-`docker run -it -p 8005:8005 bcrypt-fun`
+## Contributors
 
-The app should now be running on http://127.0.0.1:8005
+Created by [Markus Tenghamn](https://ma.rkus.io)
+
+Other contributors welcome!
+
