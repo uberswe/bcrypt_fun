@@ -26,19 +26,19 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, cookieName)
 
 	if err != nil {
-		errorHandler(w, r, http.StatusInternalServerError, err)
-		return
+		log.Println("Session error: ", err.Error())
 	}
 
 	var paramStrings string
-	var paramRemember bool
+	var paramRemember string
 	var difficultyVar int
+	var remember = false
 
 	paramStrings = r.FormValue("strings") // Sets the number of passwords
-	paramRemember, err = strconv.ParseBool(r.FormValue("remember")) // Store values in session cookie
+	paramRemember = r.FormValue("remember") // Store values in session cookie
 
-	if err != nil {
-		paramRemember = false
+	if paramRemember == "on" {
+		remember = true
 	}
 
 	i64Tmp, err := strconv.ParseInt(r.FormValue("difficulty"), 10, 64)
@@ -46,7 +46,7 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		difficultyVar = 0
 	} else {
-		for a := 0; a < int(i64Tmp); a++ {
+		for a := 0; a <= int(i64Tmp); a++ {
 			difficultyVar = a
 		}
 	}
@@ -61,9 +61,9 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 
 	parsediff := strconv.FormatInt(int64(difficultyVar), 10)
 
-	if paramRemember {
+	if remember {
 		session.Values["strings"] = paramStrings
-		session.Values["remember"] = boolToString(paramRemember)
+		session.Values["remember"] = boolToString(remember)
 		session.Values["difficulty"] = parsediff
 	} else {
 		delete(session.Values, "strings")
@@ -77,6 +77,8 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 	var hashes []Hash
 	limit := 0
 	for _, str := range stringArray {
+		str = strings.TrimSuffix(str, "\n")
+		str = strings.TrimSuffix(str, "\r")
 		hash, _ := HashPassword(str, difficultyVar)
 		hashes = append(hashes, Hash{Hash:hash})
 		limit++
@@ -85,14 +87,14 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		if difficultyVar >= 10 {
-			break;
+			break
 		}
 	}
 
 	err = session.Save(r, w)
 
 	if err != nil {
-		log.Printf("Session error: %v\n", err)
+		log.Printf("Session save error: %v\n", err)
 	}
 
 	data["href"] = siteUrl + "/api/v1/hashes"

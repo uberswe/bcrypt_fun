@@ -19,11 +19,20 @@ var cookieName = "BCRYPTFUN"
 var siteUrl = "https://bcrypt.fun"
 var siteName = "Bcrypt.fun"
 var host = ":8005"
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-var store = sessions.NewCookieStore([]byte(RandStringRunes(50)))
 var tmpl = ParseTemplates()
 
+var store *sessions.CookieStore
+
 func init() {
+	key := make([]byte, 32)
+
+	_, err := rand.Read(key)
+	if err != nil {
+		panic("Could not generate key")
+	}
+
+	store = sessions.NewCookieStore(key)
+
 	store.Options = &sessions.Options{
 		Domain:   "localhost",
 		Path:     "/",
@@ -73,14 +82,6 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int, err error)
 	} else if status == http.StatusInternalServerError {
 		tmpl.ExecuteTemplate(w, "500",nil)
 	}
-}
-
-func RandStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }
 
 func ParseTemplates() *template.Template {

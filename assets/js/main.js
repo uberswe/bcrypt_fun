@@ -15,6 +15,9 @@ function generateBcryptHashes() {
         var passblock = $("#password-block");
         passblock.html("");
         for (i = 0; i < obj.hashes.length; i++) {
+            if (i > 0) {
+                passblock.append("\n");
+            }
             passblock.append(obj.hashes[i].hash);
         }
 

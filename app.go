@@ -25,8 +25,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, cookieName)
 
 	if err != nil {
-		errorHandler(w, r, http.StatusInternalServerError, err)
-		return
+		log.Println("Session error: ", err.Error())
 	}
 
 	data := new(IndexPageData)
@@ -44,6 +43,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	var stringsTempVar string
 	var difficultyTempVar int64
 	stringsTempVar = mux.Vars(r)["strings"]
+
 	difficultyTempVar, _ = strconv.ParseInt(mux.Vars(r)["difficulty"], 10, 64)
 
 	if difficultyTempVar > 0 && difficultyTempVar <= 14 {
@@ -75,6 +75,12 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("Request received on: %s\n", r.URL.Path)
+
+	err = session.Save(r, w)
+
+	if err != nil {
+		log.Printf("Session save error: %v\n", err)
+	}
 
 	err = tmpl.ExecuteTemplate(w, "index.html", data)
 
