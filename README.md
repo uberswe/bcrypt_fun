@@ -16,6 +16,12 @@ Optionally use bindata if you want to include the template files in your binary
 go-bindata assets/... views/...
 ```
 
+Then build
+
+```
+go build
+```
+
 And then simply run using `./bcrypt_fun` and go to `localhost:8005` in your browser
 
 ## Contributors
