@@ -12,6 +12,7 @@ import (
 	"strings"
 	"log"
 	"flag"
+	"bytes"
 )
 
 var sessionExpiry = 3600 * 24 * 365  // 365 days
@@ -20,6 +21,7 @@ var siteUrl = "https://bcrypt.fun"
 var siteName = "Bcrypt.fun"
 var host = ":8005"
 var tmpl = ParseTemplates()
+var starttime = time.Now()
 
 var store *sessions.CookieStore
 
@@ -51,15 +53,15 @@ func main() {
 	flag.IntVar(&sessionExpiry, "sessionexpiry", sessionExpiry, "Time in seconds that sessions should last (3600 * 24 * 365)")
 
 	r := mux.NewRouter()
-	r.PathPrefix("/favicon.ico").Handler(http.FileServer(http.Dir("./assets/favicon.ico")))
-	r.PathPrefix("/favicon.png").Handler(http.FileServer(http.Dir("./assets/img/favicon.png")))
-	r.PathPrefix("/apple-touch-icon.png").Handler(http.FileServer(http.Dir("./assets/apple-touch-icon.png")))
-	r.PathPrefix("/browserconfig.xml").Handler(http.FileServer(http.Dir("./assets/browserconfig.xml")))
-	r.PathPrefix("/crossdomain.xml").Handler(http.FileServer(http.Dir("./assets/crossdomain.xml")))
-	r.PathPrefix("/humans.txt").Handler(http.FileServer(http.Dir("./assets/humans.txt")))
-	r.PathPrefix("/robots.txt").Handler(http.FileServer(http.Dir("./assets/robots.txt")))
-	r.PathPrefix("/tile.png").Handler(http.FileServer(http.Dir("./assets/tile.png")))
-	r.PathPrefix("/tile-wide.png").Handler(http.FileServer(http.Dir("./assets/tile-wide.png")))
+	r.HandleFunc("/favicon.ico", FileHandler).Methods("GET")
+	r.HandleFunc("/favicon.png", FileHandler).Methods("GET")
+	r.HandleFunc("/apple-touch-icon.png", FileHandler).Methods("GET")
+	r.HandleFunc("/browserconfig.xml", FileHandler).Methods("GET")
+	r.HandleFunc("/crossdomain.xml", FileHandler).Methods("GET")
+	r.HandleFunc("/humans.txt", FileHandler).Methods("GET")
+	r.HandleFunc("/robots.txt", FileHandler).Methods("GET")
+	r.HandleFunc("/tile.png", FileHandler).Methods("GET")
+	r.HandleFunc("/tile-wide.png", FileHandler).Methods("GET")
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 	r.HandleFunc("/api/v1/hashes", RedirectToIndex).Methods("GET")
 	r.HandleFunc("/api/v1/hashes", Hashes).Methods("POST")
@@ -82,6 +84,19 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int, err error)
 	} else if status == http.StatusInternalServerError {
 		tmpl.ExecuteTemplate(w, "500.html",nil)
 	}
+}
+
+func FileHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Finding: %s\n", "assets" + r.URL.Path)
+	filestring, err := Asset("assets" + r.URL.Path)
+	if err != nil {
+		errorHandler(w, r, http.StatusNotFound, err)
+		return
+	}
+	_, file := filepath.Split(r.URL.Path)
+	log.Printf("File: %s\n", file)
+	reader := bytes.NewReader([]byte(filestring))
+	http.ServeContent(w, r, file, starttime, reader)
 }
 
 func ParseTemplates() *template.Template {
