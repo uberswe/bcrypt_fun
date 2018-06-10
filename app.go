@@ -63,6 +63,12 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	strings := r.URL.Query().Get("strings")
+
+	if len(strings) != 0 {
+		data.Strings = strings
+	}
+
 	if stringsTempVar != "" {
 		data.Strings = stringsTempVar
 	}

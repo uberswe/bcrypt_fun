@@ -48,7 +48,7 @@ func main() {
 	flag.StringVar(&siteUrl, "siteurl", siteUrl, "The site url")
 	flag.StringVar(&siteName, "sitename", siteName, "The name of the site")
 	flag.StringVar(&host, "host", host, "The host and port (localhost:8005)")
-	flag.IntVar(&sessionExpiry, "sessionecpiry", sessionExpiry, "Time in seconds that sessions should last (3600 * 24 * 365)")
+	flag.IntVar(&sessionExpiry, "sessionexpiry", sessionExpiry, "Time in seconds that sessions should last (3600 * 24 * 365)")
 
 	r := mux.NewRouter()
 	r.PathPrefix("/favicon.ico").Handler(http.FileServer(http.Dir("./assets/favicon.ico")))
@@ -77,22 +77,28 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int, err error)
 
 	log.Printf("Error on: %s %v - %v\n", r.URL.Path, status, err)
 	if status == http.StatusNotFound {
-		tmpl.ExecuteTemplate(w, "404",nil)
+		tmpl.ExecuteTemplate(w, "404.html",nil)
 		tmpl.Execute(w, nil)
 	} else if status == http.StatusInternalServerError {
-		tmpl.ExecuteTemplate(w, "500",nil)
+		tmpl.ExecuteTemplate(w, "500.html",nil)
 	}
 }
 
 func ParseTemplates() *template.Template {
 	log.Printf("Building template files\n")
-	templ := template.New("")
+	tmpl := template.New("")
 	err := filepath.Walk("./views", func(path string, info os.FileInfo, err error) error {
 		log.Printf("Parsing: %s\n", path)
 		if strings.Contains(path, ".html") {
-			_, err = templ.ParseFiles(path)
+			templateString, err := Asset(path)
 			if err != nil {
-				log.Println(err)
+				log.Fatal(err)
+			} else {
+				_, file := filepath.Split(path)
+				_, err = tmpl.New(file).Parse(string(templateString))
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
 		}
 
@@ -104,5 +110,5 @@ func ParseTemplates() *template.Template {
 	}
 	log.Printf("Templates ready\n")
 
-	return templ
+	return tmpl
 }
