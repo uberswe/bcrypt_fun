@@ -36,7 +36,7 @@ func init() {
 	store = sessions.NewCookieStore(key)
 
 	store.Options = &sessions.Options{
-		Domain:   "localhost",
+		Domain:   "bcrypt.fun",
 		Path:     "/",
 		MaxAge:   sessionExpiry,
 		HttpOnly: true,
