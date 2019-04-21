@@ -13,13 +13,19 @@ function generateBcryptHashes() {
         data: data
     }).done(function (obj) {
         var passblock = $("#password-block");
+        var passblockstring = ""
         passblock.html("");
         for (i = 0; i < obj.hashes.length; i++) {
             if (i > 0) {
-                passblock.append("\n");
+                passblockstring += "\n"
+                passblockstring += obj.hashes[i].hash
+            } else {
+                passblockstring = obj.hashes[i].hash
             }
-            passblock.append(obj.hashes[i].hash);
         }
+
+
+        passblock.val(passblockstring);
 
         if (data["highlight"]) {
             selectTextareaLine(passblock, 1);

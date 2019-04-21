@@ -1,22 +1,22 @@
 package main
 
 import (
-	"time"
-	"strconv"
-	"net/http"
 	"github.com/gorilla/mux"
 	"log"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 type IndexPageData struct {
-	Date string
-	Title string
-	Count string
-	Difficulty int64
-	Strings string
-	Remember string
-	Action string
-	MoreStyles []string
+	Date        string
+	Title       string
+	Count       string
+	Difficulty  int64
+	Strings     string
+	Remember    string
+	Action      string
+	MoreStyles  []string
 	MoreScripts []string
 }
 

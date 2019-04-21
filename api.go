@@ -1,15 +1,14 @@
 package main
 
 import (
-	"net/url"
-	"golang.org/x/crypto/bcrypt"
-	"strings"
-	"strconv"
-	"net/http"
 	"encoding/json"
+	"golang.org/x/crypto/bcrypt"
 	"log"
+	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
 )
-
 
 type Hash struct {
 	Hash string ` json:"hash" xml:"hash" `
@@ -34,7 +33,7 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 	var difficultyVar int
 	var remember = false
 
-	paramStrings = r.FormValue("strings") // Sets the number of passwords
+	paramStrings = r.FormValue("strings")   // Sets the number of passwords
 	paramRemember = r.FormValue("remember") // Store values in session cookie
 
 	if paramRemember == "on" {
@@ -73,14 +72,14 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 
 	data := make(map[string]interface{})
 
-	stringArray := strings.Split(paramStrings,"\n")
+	stringArray := strings.Split(paramStrings, "\n")
 	var hashes []Hash
 	limit := 0
 	for _, str := range stringArray {
 		str = strings.TrimSuffix(str, "\n")
 		str = strings.TrimSuffix(str, "\r")
 		hash, _ := HashPassword(str, difficultyVar)
-		hashes = append(hashes, Hash{Hash:hash})
+		hashes = append(hashes, Hash{Hash: hash})
 		limit++
 		// Limit to 20 hashes
 		if limit >= 20 {
@@ -121,4 +120,3 @@ func HashPassword(password string, cost int) (string, error) {
 func boolToString(b bool) string {
 	return strconv.FormatBool(b)
 }
-

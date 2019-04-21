@@ -1,21 +1,22 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
-	"net/http"
-	"html/template"
-	"github.com/gorilla/sessions"
-	"math/rand"
-	"time"
-	"path/filepath"
-	"os"
-	"strings"
-	"log"
-	"flag"
 	"bytes"
+	"flag"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
+	"html/template"
+	"io/ioutil"
+	"log"
+	"math/rand"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 )
 
-var sessionExpiry = 3600 * 24 * 365  // 365 days
+var sessionExpiry = 3600 * 24 * 365 // 365 days
 var cookieName = "BCRYPTFUN"
 var siteUrl = "https://bcrypt.fun"
 var siteName = "Bcrypt.fun"
@@ -70,7 +71,7 @@ func main() {
 	http.ListenAndServe(":8005", r)
 }
 
-func RedirectToIndex (w http.ResponseWriter, r *http.Request) {
+func RedirectToIndex(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 301)
 }
 
@@ -79,15 +80,15 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int, err error)
 
 	log.Printf("Error on: %s %v - %v\n", r.URL.Path, status, err)
 	if status == http.StatusNotFound {
-		tmpl.ExecuteTemplate(w, "404.html",nil)
+		tmpl.ExecuteTemplate(w, "404.html", nil)
 		tmpl.Execute(w, nil)
 	} else if status == http.StatusInternalServerError {
-		tmpl.ExecuteTemplate(w, "500.html",nil)
+		tmpl.ExecuteTemplate(w, "500.html", nil)
 	}
 }
 
 func FileHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Finding: %s\n", "assets" + r.URL.Path)
+	log.Printf("Finding: %s\n", "assets"+r.URL.Path)
 	filestring, err := Asset("assets" + r.URL.Path)
 	if err != nil {
 		errorHandler(w, r, http.StatusNotFound, err)
@@ -126,4 +127,23 @@ func ParseTemplates() *template.Template {
 	log.Printf("Templates ready\n")
 
 	return tmpl
+}
+
+func Asset(s string) (string, error) {
+	if _, err := os.Stat(s); err != nil {
+		return s, err
+	}
+
+	stringPath, err := filepath.Abs(s)
+
+	if err != nil {
+		return s, err
+	}
+
+	b, err := ioutil.ReadFile(stringPath) // just pass the file name
+	if err != nil {
+		return s, err
+	}
+
+	return string(b), nil
 }
