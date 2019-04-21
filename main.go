@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
@@ -127,23 +126,4 @@ func ParseTemplates() *template.Template {
 	log.Printf("Templates ready\n")
 
 	return tmpl
-}
-
-func Asset(s string) (string, error) {
-	if _, err := os.Stat(s); err != nil {
-		return s, err
-	}
-
-	stringPath, err := filepath.Abs(s)
-
-	if err != nil {
-		return s, err
-	}
-
-	b, err := ioutil.ReadFile(stringPath) // just pass the file name
-	if err != nil {
-		return s, err
-	}
-
-	return string(b), nil
 }
