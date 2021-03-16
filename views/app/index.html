@@ -8,22 +8,27 @@
         <div class="col-md-6">
             <h2>Generate one or more bcrypt hashes</h2>
             <p>Use <a href="https://bcrypt.fun">Bcrypt.fun</a> to generate one or more bcrypt hashes from strings.
-                This is usually used for testing or recovering forgotten passwords when the user has access to the database.
+                This is usually used for testing or recovering forgotten passwords when the user has access to the
+                database.
                 Use ?strings= to set a default string.</p>
             <form id="bcryptform" method="post" onsubmit="return generateBcryptHashes();">
                 <div class="form-group">
                     <label for="strings">Strings</label>
-                    <textarea name="strings" type="text" class="form-control" rows="6" id="strings" aria-describedby="stringsHelp">{{.Strings}}</textarea>
-                    <small id="stringsHelp" class="form-text text-muted">One string per line, bcrypt hash will be on the right.</small>
+                    <textarea name="strings" type="text" class="form-control" rows="6" id="strings"
+                              aria-describedby="stringsHelp">{{.Strings}}</textarea>
+                    <small id="stringsHelp" class="form-text text-muted">One string per line, bcrypt hash will be on the
+                        right.</small>
                 </div>
                 <div class="form-group">
                     <label for="difficulty">Cost</label>
-                    <input name="difficulty" type="text" class="form-control" id="difficulty" aria-describedby="difficultyHelp" value="{{.Difficulty}}">
-                    <small id="difficultyHelp" class="form-text text-muted">Set the cost between 0 and 15, limited to 1 hash when cost >= 10</small>
+                    <input name="difficulty" type="text" class="form-control" id="difficulty"
+                           aria-describedby="difficultyHelp" value="{{.Difficulty}}">
+                    <small id="difficultyHelp" class="form-text text-muted">A cost as high as 20 is allowed</small>
                 </div>
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input name="remember" type="checkbox" class="form-check-input" {{ if eq .Remember "true"}} CHECKED{{end}}>
+                        <input name="remember" type="checkbox"
+                               class="form-check-input" {{ if eq .Remember "true"}} CHECKED{{end}}>
                         Remember my input
                     </label>
                 </div>
@@ -33,7 +38,10 @@
 
         </div>
         <div class="col-md-6">
-            <textarea class="form-control" rows="5" maxlength="0" id="password-block" ></textarea>
+            <textarea class="form-control" rows="5" maxlength="0" id="password-block"></textarea>
+            <div id="loader" class="loader-box" style="display: none;">
+                <div class="loader"></div>
+            </div>
         </div>
     </div>
 
