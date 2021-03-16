@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -26,6 +27,8 @@ var starttime = time.Now()
 var store *sessions.CookieStore
 
 func init() {
+	runtime.GOMAXPROCS(1)
+	rand.Seed(time.Now().UTC().UnixNano())
 	key := make([]byte, 32)
 
 	_, err := rand.Read(key)
