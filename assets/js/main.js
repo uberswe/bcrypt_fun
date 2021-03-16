@@ -12,6 +12,7 @@ function generateBcryptHashes() {
     }
 
     $("#loader").show()
+    $("#generate").prop('disabled', true)
 
     $.ajax({
         method: "POST",
@@ -19,6 +20,7 @@ function generateBcryptHashes() {
         data: data
     }).done(function (obj) {
         $("#loader").hide()
+        $("#generate").prop('disabled', false)
         const passblock = $ ("#password-block");
         let passblockstring = "";
         passblock.html("");
