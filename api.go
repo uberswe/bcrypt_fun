@@ -50,12 +50,12 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if difficultyVar < 0 {
+	if difficultyVar <= 0 {
 		difficultyVar = 1
 	}
 
-	if difficultyVar >= 14 {
-		difficultyVar = 14
+	if difficultyVar >= 20 {
+		difficultyVar = 20
 	}
 
 	parsediff := strconv.FormatInt(int64(difficultyVar), 10)

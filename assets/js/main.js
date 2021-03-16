@@ -1,19 +1,26 @@
 
 function generateBcryptHashes() {
-    var values = $("#bcryptform").serializeArray();
-    var data = {};
+    const difficulty = $("#difficulty").val();
+    if (difficulty > 20) {
+        alert("Cost is greater than 20, the cost will be reduced to 20.")
+    }
+    const values = $ ("#bcryptform").serializeArray ();
+    const data = {};
 
-    for (i = 0; i < values.length; i++) {
+    for (let i = 0; i < values.length; i++) {
         data[values[i].name] = values[i].value;
     }
+
+    $("#loader").show()
 
     $.ajax({
         method: "POST",
         url: "/api/v1/hashes",
         data: data
     }).done(function (obj) {
-        var passblock = $("#password-block");
-        var passblockstring = ""
+        $("#loader").hide()
+        const passblock = $ ("#password-block");
+        let passblockstring = "";
         passblock.html("");
         for (i = 0; i < obj.hashes.length; i++) {
             if (i > 0) {
@@ -37,11 +44,11 @@ function generateBcryptHashes() {
 // See https://stackoverflow.com/a/13651036/1260548
 function selectTextareaLine(tarea,lineNum) {
     lineNum--; // array starts at 0
-    var lines = tarea.value.split("\n");
+    const lines = tarea.value.split ("\n");
 
     // calculate start/end
-    var startPos = 0;
-    for(var x = 0; x < lines.length; x++) {
+    let startPos = 0;
+    for(let x = 0; x < lines.length; x++) {
         if(x === lineNum) {
             break;
         }
@@ -65,7 +72,7 @@ function selectTextareaLine(tarea,lineNum) {
     if (document.selection && document.selection.createRange) {
         tarea.focus();
         tarea.select();
-        var range = document.selection.createRange();
+        const range = document.selection.createRange ();
         range.collapse(true);
         range.moveEnd("character", endPos);
         range.moveStart("character", startPos);
