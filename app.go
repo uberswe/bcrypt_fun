@@ -1,6 +1,7 @@
-package main
+package bcrypt
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -20,17 +21,17 @@ type IndexPageData struct {
 	MoreScripts []string
 }
 
-func Index(w http.ResponseWriter, r *http.Request) {
+func Index(c *gin.Context) {
 
-	session, err := store.Get(r, cookieName)
+	session, err := store.Get(c.Request, cookieName)
 
 	if err != nil {
 		log.Println("Session error: ", err.Error())
 	}
 
 	data := new(IndexPageData)
-	if r.URL.Path != "/" {
-		errorHandler(w, r, http.StatusNotFound, err)
+	if c.Request.URL.Path != "/" {
+		errorHandler(c, http.StatusNotFound)
 		return
 	}
 	data.Date = time.Now().Format("2006")
@@ -42,9 +43,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	var stringsTempVar string
 	var difficultyTempVar int64
-	stringsTempVar = mux.Vars(r)["strings"]
+	stringsTempVar = mux.Vars(c.Request)["strings"]
 
-	difficultyTempVar, _ = strconv.ParseInt(mux.Vars(r)["difficulty"], 10, 64)
+	difficultyTempVar, _ = strconv.ParseInt(mux.Vars(c.Request)["difficulty"], 10, 64)
 
 	if difficultyTempVar > 0 && difficultyTempVar <= 14 {
 		data.Difficulty = difficultyTempVar
@@ -63,7 +64,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	strings := r.URL.Query().Get("strings")
+	strings := c.Request.URL.Query().Get("strings")
 
 	if len(strings) != 0 {
 		data.Strings = strings
@@ -80,18 +81,11 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	log.Printf("Request received on: %s\n", r.URL.Path)
-
-	err = session.Save(r, w)
+	err = session.Save(c.Request, c.Writer)
 
 	if err != nil {
 		log.Printf("Session save error: %v\n", err)
 	}
 
-	err = tmpl.ExecuteTemplate(w, "index.html", data)
-
-	if err != nil {
-		errorHandler(w, r, http.StatusInternalServerError, err)
-		return
-	}
+	c.HTML(http.StatusOK, "app/index.html", data)
 }

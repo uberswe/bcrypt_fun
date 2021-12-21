@@ -1,7 +1,7 @@
-package main
+package bcrypt
 
 import (
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
@@ -18,11 +18,11 @@ type Params struct {
 	url.Values
 }
 
-func Hashes(w http.ResponseWriter, r *http.Request) {
+func Hashes(c *gin.Context) {
 
 	// TODO rate limit this?
 
-	session, err := store.Get(r, cookieName)
+	session, err := store.Get(c.Request, cookieName)
 
 	if err != nil {
 		log.Println("Session error: ", err.Error())
@@ -33,14 +33,14 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 	var difficultyVar int
 	var remember = false
 
-	paramStrings = r.FormValue("strings")   // Sets the number of passwords
-	paramRemember = r.FormValue("remember") // Store values in session cookie
+	paramStrings = c.PostForm("strings")   // Sets the number of passwords
+	paramRemember = c.PostForm("remember") // Store values in session cookie
 
 	if paramRemember == "on" {
 		remember = true
 	}
 
-	i64Tmp, err := strconv.ParseInt(r.FormValue("difficulty"), 10, 64)
+	i64Tmp, err := strconv.ParseInt(c.PostForm("difficulty"), 10, 64)
 
 	if err != nil {
 		difficultyVar = 0
@@ -90,7 +90,7 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = session.Save(r, w)
+	err = session.Save(c.Request, c.Writer)
 
 	if err != nil {
 		log.Printf("Session save error: %v\n", err)
@@ -100,16 +100,7 @@ func Hashes(w http.ResponseWriter, r *http.Request) {
 	data["hashes"] = hashes
 	data["count"] = len(hashes)
 
-	payload, err := json.Marshal(data)
-	if err != nil {
-		errorHandler(w, r, http.StatusInternalServerError, err)
-		return
-	}
-
-	log.Printf("Request received on: %s\n", r.URL.Path)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(payload)
+	c.JSON(http.StatusOK, data)
 }
 
 func HashPassword(password string, cost int) (string, error) {
