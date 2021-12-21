@@ -11,6 +11,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"runtime"
 	"strings"
 	"time"
@@ -53,11 +54,16 @@ func init() {
 }
 
 func Run() {
+	flag.Parse()
 	flag.StringVar(&cookieName, "cookiename", cookieName, "The name to be used for cookies")
 	flag.StringVar(&siteUrl, "siteurl", siteUrl, "The site url")
 	flag.StringVar(&siteName, "sitename", siteName, "The name of the site")
 	flag.StringVar(&host, "host", host, "The host and port (localhost:8005)")
 	flag.IntVar(&sessionExpiry, "sessionexpiry", sessionExpiry, "Time in seconds that sessions should last (3600 * 24 * 365)")
+
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		host = envPort
+	}
 
 	r := gin.Default()
 
