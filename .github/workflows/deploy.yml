@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  IMAGE: password_fun
+  IMAGE: bcrypt_fun
 
 jobs:
   deploy:
@@ -45,4 +45,4 @@ jobs:
 
       - name: Deploy
         run: |-
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /var/www/password_fun; docker-compose pull"
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /var/www/bcrypt_fun; docker-compose pull"
